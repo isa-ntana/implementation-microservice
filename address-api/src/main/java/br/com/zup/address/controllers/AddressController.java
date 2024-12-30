@@ -48,6 +48,7 @@ public class AddressController {
     // Read (Get All)
     @GetMapping
     public ResponseEntity<List<AddressResponseDTO>> getAllAddresses() {
+        log.info("Start get all addresses flow");
         List<Address> addresses = addressService.getAllAddresses();
         List<AddressResponseDTO> responseDTOs = addresses.stream().map(address -> {
             AddressResponseDTO dto = new AddressResponseDTO();
@@ -60,12 +61,14 @@ public class AddressController {
             return dto;
         }).collect(Collectors.toList());
 
+        log.info("Finish get all addresses flow");
         return ResponseEntity.ok(responseDTOs);
     }
 
     // Read (Get by ID)
     @GetMapping("/{id}")
     public ResponseEntity<AddressResponseDTO> getAddressById(@PathVariable String id) {
+        log.info("Start get address by id flow");
         Address address = addressService.getAddressById(id)
                 .orElseThrow(() -> new RuntimeException("Address not found with id " + id));
 
@@ -77,12 +80,14 @@ public class AddressController {
         responseDTO.setState(address.getState());
         responseDTO.setConsumerId(address.getConsumerId());
 
+        log.info("Finish get address by id flow");
         return ResponseEntity.ok(responseDTO);
     }
 
     // Update
     @PutMapping("/{id}")
     public ResponseEntity<AddressResponseDTO> updateAddress(@PathVariable String id, @RequestBody AddressRequestDTO requestDTO) {
+        log.info("Start update address by id flow");
         Address updatedAddress = new Address();
         updatedAddress.setStreet(requestDTO.getStreet());
         updatedAddress.setCity(requestDTO.getCity());
@@ -100,13 +105,16 @@ public class AddressController {
         responseDTO.setState(address.getState());
         responseDTO.setConsumerId(address.getConsumerId());
 
+        log.info("Finish update address by id flow");
         return ResponseEntity.ok(responseDTO);
     }
 
     // Delete
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable String id) {
+        log.info("Start delete address by id flow");
         addressService.deleteAddress(id);
+        log.info("Finish delete address by id flow");
         return ResponseEntity.noContent().build();
     }
 }
