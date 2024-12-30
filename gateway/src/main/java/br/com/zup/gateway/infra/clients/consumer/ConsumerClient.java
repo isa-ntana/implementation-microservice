@@ -1,5 +1,7 @@
 package br.com.zup.gateway.infra.clients.consumer;
 
+import br.com.zup.gateway.infra.clients.address.dtos.AddressRegisterDto;
+import br.com.zup.gateway.infra.clients.address.dtos.AddressResponseDTO;
 import br.com.zup.gateway.infra.clients.consumer.dtos.ConsumerRegisterDTO;
 import br.com.zup.gateway.infra.clients.consumer.dtos.ConsumerResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,6 @@ public class ConsumerClient {
     private WebClient webClient;
     private final String URL_BASE = "http://localhost:8081/consumer";
 
-
     public ConsumerResponseDTO registerConsumerClient(ConsumerRegisterDTO registerDTO){
         return webClient
                 .post()
@@ -26,11 +27,29 @@ public class ConsumerClient {
                 .block();
     }
 
-
-    public ConsumerResponseDTO getConsumer(String consumerId){
+    public ConsumerResponseDTO getConsumerById(String consumerId){
         return webClient
                 .get()
                 .uri(URL_BASE+"/"+consumerId)
+                .retrieve()
+                .bodyToMono(ConsumerResponseDTO.class)
+                .block();
+    }
+
+    public void deleteConsumerById(String consumerId) {
+        webClient
+                .delete()
+                .uri(URL_BASE + "/" + consumerId)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+    }
+
+    public ConsumerResponseDTO updateConsumer(String consumerId, ConsumerRegisterDTO consumerRegisterDto) {
+        return webClient
+                .post()
+                .uri(URL_BASE + "/" + consumerId)
+                .bodyValue(consumerRegisterDto)
                 .retrieve()
                 .bodyToMono(ConsumerResponseDTO.class)
                 .block();
