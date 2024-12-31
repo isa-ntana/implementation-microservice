@@ -2,10 +2,13 @@ package br.com.zup.gateway.infra.clients.address;
 
 import br.com.zup.gateway.infra.clients.address.dtos.AddressRegisterDto;
 import br.com.zup.gateway.infra.clients.address.dtos.AddressResponseDTO;
+import br.com.zup.gateway.infra.clients.consumer.dtos.ConsumerResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
 
 @Component
 public class AddressClient {
@@ -21,6 +24,16 @@ public class AddressClient {
                 .bodyValue(addressRegisterDto)
                 .retrieve()
                 .bodyToMono(AddressResponseDTO.class)
+                .block();
+    }
+
+    public List<AddressResponseDTO> getAllAddresses(){
+        return webClient
+                .get()
+                .uri(URL_BASE)
+                .retrieve()
+                .bodyToFlux(AddressResponseDTO.class)
+                .collectList()
                 .block();
     }
 
@@ -44,7 +57,7 @@ public class AddressClient {
 
     public AddressResponseDTO updateAddress(String addressId, AddressRegisterDto addressRegisterDto) {
         return webClient
-                .post()
+                .put()
                 .uri(URL_BASE + "/" + addressId)
                 .bodyValue(addressRegisterDto)
                 .retrieve()

@@ -11,6 +11,8 @@ import br.com.zup.gateway.infra.clients.consumer.dtos.ConsumerResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ConsumerAddressService {
 
@@ -19,6 +21,31 @@ public class ConsumerAddressService {
 
     @Autowired
     private AddressClient addressClient;
+
+    public List<AddressResponseDTO> getAllAddresses() {
+        return addressClient.getAllAddresses();
+    }
+
+    public List<ConsumerResponseDTO> getAllConsumers() {
+        return consumerClient.getAllConsumers();
+    }
+
+    public ConsumerResponseDTO getConsumerById(String consumerId) {
+        return consumerClient.getConsumerById(consumerId);
+    }
+
+    public AddressResponseDTO getAddressById(String addressId) {
+        return addressClient.getAddressById(addressId);
+    }
+
+    public List<ConsumerAddressResponseDTO> getConsumerAndAddressById(String consumerId, String addressId) {
+        ConsumerResponseDTO consumerResponseDTO = getConsumerById(consumerId);
+        AddressResponseDTO addressResponseDTO = getAddressById(addressId);
+        ConsumerAddressResponseDTO consumerAddressResponseDTO =
+                new ConsumerAddressResponseDTO(consumerResponseDTO, addressResponseDTO);
+
+        return List.of(consumerAddressResponseDTO);
+    }
 
     public ConsumerAddressResponseDTO registerConsumerAddress(ConsumerAddressRegisterDTO consumerAddressRegisterDTO) {
         ConsumerResponseDTO consumerResponseDTO = registerConsumer(consumerAddressRegisterDTO);
@@ -52,5 +79,30 @@ public class ConsumerAddressService {
         addressRegisterDto.setStreet(consumerAddressRegisterDTO.getAddress().getStreet());
         addressRegisterDto.setZipCode(consumerAddressRegisterDTO.getAddress().getZipCode());
         return addressRegisterDto;
+    }
+
+    public void deleteConsumerById(String consumerId) {
+        consumerClient.deleteConsumerById(consumerId);
+    }
+
+    public void deleteAddressById(String addressId) {
+        addressClient.deleteAddressById(addressId);
+    }
+
+    public ConsumerAddressResponseDTO updateConsumer(String consumerId, ConsumerAddressRegisterDTO registerDTO) {
+        ConsumerRegisterDTO consumerRegisterDTO = mapToConsumerRegisterDTO(registerDTO);
+        ConsumerResponseDTO updatedConsumer = consumerClient.updateConsumer(consumerId, consumerRegisterDTO);
+        AddressResponseDTO addressResponseDTO = addressClient.getAddressById(consumerId);
+
+        return new ConsumerAddressResponseDTO(updatedConsumer, addressResponseDTO);
+    }
+
+    public ConsumerAddressResponseDTO updateAddress(String addressId, ConsumerAddressRegisterDTO registerDTO) {
+        AddressRegisterDto addressRegisterDto = mapToAddressRegisterDTO(registerDTO, addressId);
+        AddressResponseDTO updatedAddress = addressClient.updateAddress(addressId, addressRegisterDto);
+
+        ConsumerResponseDTO consumerResponseDTO = consumerClient.getConsumerById(registerDTO.getAddress().getConsumerId());
+
+        return new ConsumerAddressResponseDTO(consumerResponseDTO, updatedAddress);
     }
 }
