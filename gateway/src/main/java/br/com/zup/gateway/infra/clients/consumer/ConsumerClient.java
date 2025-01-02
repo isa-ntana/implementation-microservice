@@ -1,7 +1,5 @@
 package br.com.zup.gateway.infra.clients.consumer;
 
-import br.com.zup.gateway.infra.clients.address.dtos.AddressRegisterDto;
-import br.com.zup.gateway.infra.clients.address.dtos.AddressResponseDTO;
 import br.com.zup.gateway.infra.clients.consumer.dtos.ConsumerRegisterDTO;
 import br.com.zup.gateway.infra.clients.consumer.dtos.ConsumerResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;

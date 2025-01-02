@@ -1,8 +1,7 @@
 package br.com.zup.gateway.infra.clients.address;
 
-import br.com.zup.gateway.infra.clients.address.dtos.AddressRegisterDto;
+import br.com.zup.gateway.infra.clients.address.dtos.AddressRegisterDTO;
 import br.com.zup.gateway.infra.clients.address.dtos.AddressResponseDTO;
-import br.com.zup.gateway.infra.clients.consumer.dtos.ConsumerResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -17,7 +16,7 @@ public class AddressClient {
     private WebClient webClient;
     private final String URL_BASE = "http://localhost:8082/address";
 
-    public AddressResponseDTO registeAddress(AddressRegisterDto addressRegisterDto){
+    public AddressResponseDTO registeAddress(AddressRegisterDTO addressRegisterDto){
         return webClient.post()
                 .uri(URL_BASE)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -55,7 +54,7 @@ public class AddressClient {
                 .block();
     }
 
-    public AddressResponseDTO updateAddress(String addressId, AddressRegisterDto addressRegisterDto) {
+    public AddressResponseDTO updateAddress(String addressId, AddressRegisterDTO addressRegisterDto) {
         return webClient
                 .put()
                 .uri(URL_BASE + "/" + addressId)
