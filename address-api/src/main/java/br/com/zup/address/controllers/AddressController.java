@@ -4,6 +4,7 @@ import br.com.zup.address.controllers.dtos.AddressRequestDTO;
 import br.com.zup.address.controllers.dtos.AddressResponseDTO;
 import br.com.zup.address.models.Address;
 import br.com.zup.address.services.AddressService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,98 +24,90 @@ public class AddressController {
 
     // Create
     @PostMapping
-    public ResponseEntity<AddressResponseDTO> createAddress(@RequestBody AddressRequestDTO requestDTO) {
-        log.info("Start address register flow");
-        Address address = new Address();
-        address.setStreet(requestDTO.getStreet());
-        address.setCity(requestDTO.getCity());
-        address.setZipCode(requestDTO.getZipCode());
-        address.setState(requestDTO.getState());
-        address.setConsumerId(requestDTO.getConsumerId());
-
-        Address createdAddress = addressService.createAddress(address);
-
-        AddressResponseDTO responseDTO = new AddressResponseDTO();
-        responseDTO.setId(createdAddress.getId());
-        responseDTO.setStreet(createdAddress.getStreet());
-        responseDTO.setCity(createdAddress.getCity());
-        responseDTO.setZipCode(createdAddress.getZipCode());
-        responseDTO.setState(createdAddress.getState());
-        responseDTO.setConsumerId(createdAddress.getConsumerId());
-        log.info("Finish address register flow");
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<AddressResponseDTO> createAddress(@Valid @RequestBody AddressRequestDTO requestDTO) {
+        try {
+            log.info("Start address register flow");
+            Address address = addressService.createAddress(requestDTO.toEntity());
+            log.info("Finish consumer register flow");
+            return ResponseEntity.status(201).body(AddressResponseDTO.fromEntity(address));
+        } catch (IllegalArgumentException e) {
+            log.error("Validation error: {}", e.getMessage());
+            return createErrorResponseDTO(e.getMessage(), 400);
+        } catch (RuntimeException e) {
+            log.error("Error occurred while creating address: {}", e.getMessage());
+            return createErrorResponseDTO("An error occurred while creating the address: " + e.getMessage(), 500);
+        }
     }
 
     // Read (Get All)
     @GetMapping
     public ResponseEntity<List<AddressResponseDTO>> getAllAddresses() {
         log.info("Start get all addresses flow");
+
         List<Address> addresses = addressService.getAllAddresses();
-        List<AddressResponseDTO> responseDTOs = addresses.stream().map(address -> {
-            AddressResponseDTO dto = new AddressResponseDTO();
-            dto.setId(address.getId());
-            dto.setStreet(address.getStreet());
-            dto.setCity(address.getCity());
-            dto.setZipCode(address.getZipCode());
-            dto.setState(address.getState());
-            dto.setConsumerId(address.getConsumerId());
-            return dto;
-        }).collect(Collectors.toList());
+        List<AddressResponseDTO> responseDTOs = addresses.stream()
+                .map(AddressResponseDTO::fromEntity)
+                .collect(Collectors.toList());
 
         log.info("Finish get all addresses flow");
-        return ResponseEntity.ok(responseDTOs);
+        return ResponseEntity.status(200).body(responseDTOs);
     }
 
     // Read (Get by ID)
     @GetMapping("/{id}")
-    public ResponseEntity<AddressResponseDTO> getAddressById(@PathVariable String id) {
-        log.info("Start get address by id flow");
-        Address address = addressService.getAddressById(id)
-                .orElseThrow(() -> new RuntimeException("Address not found with id " + id));
+    public ResponseEntity<Object> getAddressById(@Valid @PathVariable String id) {
+        try {
+            log.info("Start get address by id flow");
 
-        AddressResponseDTO responseDTO = new AddressResponseDTO();
-        responseDTO.setId(address.getId());
-        responseDTO.setStreet(address.getStreet());
-        responseDTO.setCity(address.getCity());
-        responseDTO.setZipCode(address.getZipCode());
-        responseDTO.setState(address.getState());
-        responseDTO.setConsumerId(address.getConsumerId());
+            Address address = addressService.getAddressById(id)
+                    .orElseThrow(() -> new RuntimeException("Address not found with id " + id));
 
-        log.info("Finish get address by id flow");
-        return ResponseEntity.ok(responseDTO);
+            log.info("Finish get address by id flow");
+            return ResponseEntity.status(200).body(AddressResponseDTO.fromEntity(address));
+        } catch (RuntimeException e) {
+            log.error("Error occurred: {}", e.getMessage());
+            return ResponseEntity.status(404).body("Address not found with id: " + id);
+        } catch (Exception e) {
+            log.error("Unexpected error occurred: {}", e.getMessage());
+            return ResponseEntity.status(505).body("An unexpected error occurred: " + e.getMessage());
+        }
     }
+
 
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<AddressResponseDTO> updateAddress(@PathVariable String id, @RequestBody AddressRequestDTO requestDTO) {
-        log.info("Start update address by id flow");
-        Address updatedAddress = new Address();
-        updatedAddress.setStreet(requestDTO.getStreet());
-        updatedAddress.setCity(requestDTO.getCity());
-        updatedAddress.setZipCode(requestDTO.getZipCode());
-        updatedAddress.setState(requestDTO.getState());
-        updatedAddress.setConsumerId(requestDTO.getConsumerId());
-
-        Address address = addressService.updateAddress(id, updatedAddress);
-
-        AddressResponseDTO responseDTO = new AddressResponseDTO();
-        responseDTO.setId(address.getId());
-        responseDTO.setStreet(address.getStreet());
-        responseDTO.setCity(address.getCity());
-        responseDTO.setZipCode(address.getZipCode());
-        responseDTO.setState(address.getState());
-        responseDTO.setConsumerId(address.getConsumerId());
-
-        log.info("Finish update address by id flow");
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<AddressResponseDTO> updateAddress(@Valid @PathVariable String id, @RequestBody AddressRequestDTO requestDTO) {
+        try {
+            log.info("Start update address by id flow");
+            Address updatedAddress = addressService.updateAddress(id, requestDTO.toEntity());
+            log.info("Finish update address by id flow");
+            return ResponseEntity.status(200).body(AddressResponseDTO.fromEntity(updatedAddress));
+        } catch (RuntimeException e) {
+            log.error("Error occurred while creating address: {}", e.getMessage());
+            return createErrorResponseDTO("An error occurred while updating the address: " + e.getMessage(), 500);
+        }
     }
 
     // Delete
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable String id) {
-        log.info("Start delete address by id flow");
-        addressService.deleteAddress(id);
-        log.info("Finish delete address by id flow");
-        return ResponseEntity.noContent().build();
+        try {
+            log.info("Start delete address by id flow");
+            addressService.deleteAddress(id);
+            log.info("Finish delete address by id flow");
+            return ResponseEntity.status(204).build();
+        } catch (RuntimeException e) {
+            log.error("Error occurred: {}", e.getMessage());
+            return ResponseEntity.status(404).build();
+        } catch (Exception e) {
+            log.error("Unexpected error occurred: {}", e.getMessage());
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    private ResponseEntity<AddressResponseDTO> createErrorResponseDTO(String message, int statusCode) {
+        AddressResponseDTO errorResponse = new AddressResponseDTO();
+        errorResponse.setStreet("Error: " + message);
+        return ResponseEntity.status(statusCode).body(errorResponse);
     }
 }
