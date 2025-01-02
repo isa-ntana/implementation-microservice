@@ -1,52 +1,38 @@
 package br.com.zup.address.controllers.dtos;
 
+import br.com.zup.address.models.Address;
+import jakarta.validation.constraints.*;
+import lombok.*;
+
+@Data
 public class AddressRequestDTO {
+
+    @NotNull
     private String street;
+
+    @NotNull
     private String city;
+
+    @Pattern(regexp = "^[0-9]{5}-[0-9]{3}$", message = "Invalid zip code")
+    @NotNull
     private String zipCode;
+
+    @NotNull
     private String state;
+
     private String consumerId;
 
     public AddressRequestDTO() {
     }
 
-    public String getStreet() {
-        return street;
+    public Address toEntity() {
+        Address address = new Address();
+        address.setCity(this.city);
+        address.setStreet(this.street);
+        address.setZipCode(this.zipCode);
+        address.setState(this.state);
+        address.setConsumerId(this.consumerId);
+        return address;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getConsumerId() {
-        return consumerId;
-    }
-
-    public void setConsumerId(String consumerId) {
-        this.consumerId = consumerId;
-    }
 }

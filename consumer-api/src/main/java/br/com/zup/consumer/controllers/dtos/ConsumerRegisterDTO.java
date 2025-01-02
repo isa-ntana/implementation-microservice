@@ -1,38 +1,23 @@
 package br.com.zup.consumer.controllers.dtos;
 
 import br.com.zup.consumer.models.Consumer;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
+@Data
 public class ConsumerRegisterDTO {
 
+    @NotNull
     private String name;
+
+    @NotNull
+    @Size(min = 1, max = 3)
     private String age;
+
+    @Email
     private String email;
 
     public ConsumerRegisterDTO() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAge() {
-        return age;
-    }
-
-    public void setAge(String age) {
-        this.age = age;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public Consumer toEntity() {
