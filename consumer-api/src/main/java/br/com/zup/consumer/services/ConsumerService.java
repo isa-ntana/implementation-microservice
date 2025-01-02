@@ -19,7 +19,6 @@ public class ConsumerService {
 
     // Create
     public Consumer createConsumer(Consumer consumer) {
-        log.info("Start create consumer flow");
         return consumerRepository.save(consumer);
     }
 
@@ -35,20 +34,27 @@ public class ConsumerService {
 
     // Update
     public Consumer updateConsumer(String id, Consumer updatedConsumer) {
+        log.info("Start update consumer with id {}", id + " to updatedConsumer flow");
         return consumerRepository.findById(id).map(consumer -> {
             consumer.setName(updatedConsumer.getName());
             consumer.setAge(updatedConsumer.getAge());
             consumer.setEmail(updatedConsumer.getEmail());
+            log.info("Finish update consumer service flow");
             return consumerRepository.save(consumer);
-        }).orElseThrow(() -> new RuntimeException("Consumer not found with id: " + id));
+        }).orElseThrow(() -> {
+            log.error("Consumer not found with id: " + id + " to update");
+            return new RuntimeException("Consumer not found with id: " + id);
+        });
     }
 
     // Delete
     public void deleteConsumer(String id) {
+        log.info("Start delete consumer service flow");
         if (consumerRepository.existsById(id)) {
+            log.info("Finish delete consumer service flow");
             consumerRepository.deleteById(id);
         } else {
-            log.error("Delete consumer blocked: consumer not found: id "+id);
+            log.error("Delete consumer blocked, because id not found: {}" ,id);
             throw new RuntimeException("Consumer not found with id: " + id);
         }
     }
