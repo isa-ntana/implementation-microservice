@@ -6,9 +6,9 @@ Para testar o projeto, é necessário executar os três projetos: `gateway`, `co
 
 Para realizar uma requisição, siga o padrão REST enviando a requisição para o `gateway` através da porta `8080`.
 
-Exemplo:
+Endpoints consumer-address:
 
-**POST /consumer-address**
+**POST  ->  /consumer-address**
 
 **Body:**
 ```json
@@ -24,6 +24,73 @@ Exemplo:
   }
 }
 ```
+
+**GET  ->  /consumer-address?consumerId={consumerId}&addressId={addressId}**
+
+**PUT  ->  /consumer-address?consumerId={consumerId}&addressId={addressId}**
+
+**Body:**
+```json
+{
+  "consumer": {
+    "name": "João Silva Atualizado",
+    "age": "36",
+    "email": "joao.silva.atualizado@email.com"
+  },
+  "address": {
+    "street": "Av Atualizada",
+    "city": "São Paulo",
+    "zipCode": "87654-321",
+    "state": "SP",
+    "consumerId": "daf42388-96e3-4c39-9a4a-897c3ec89783"
+  }
+}
+```
+
+**DELETE  ->  /consumer-address?consumerId={consumerId}&addressId={addressId}**
+
+Endpoints gateway consumer:
+
+**GET  ->  /consumer/all**
+
+**PUT  ->  /consumer?consumerId={consumerId}**
+
+**Body:**
+```json
+{
+  "name": "João Silva Atualizado",
+  "age": "36",
+  "email": "joao.silva.atualizado@email.com"
+}
+```
+
+**DELETE  ->  /consumer?consumerId={consumerId}**
+
+Endpoints gateway address:
+
+**GET  ->  /address/all**
+
+**PUT  ->  /address?addressId={addressId}**
+
+**Body:**
+```json
+{
+  "consumer": {
+    "name": "João Silva Atualizado",
+    "age": "36",
+    "email": "joao.silva.atualizado@email.com"
+  },
+  "address": {
+    "street": "Av Atualizada",
+    "city": "São Paulo",
+    "zipCode": "87654-321",
+    "state": "SP",
+    "consumerId": "daf42388-96e3-4c39-9a4a-897c3ec89783"
+  }
+}
+```
+
+**DELETE  ->  /address?addressId={addressId}**
 
 ## Desafio
 

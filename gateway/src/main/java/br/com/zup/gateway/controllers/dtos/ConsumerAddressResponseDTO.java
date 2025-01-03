@@ -20,4 +20,7 @@ public class ConsumerAddressResponseDTO {
         this.address = new AddressDTO(addressResponseDTO);
     }
 
+    public ConsumerAddressResponseDTO() {
+
+    }
 }
