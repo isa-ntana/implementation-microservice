@@ -58,6 +58,7 @@ public class AddressClient {
         return webClient
                 .put()
                 .uri(URL_BASE + "/" + addressId)
+                .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(addressRegisterDto)
                 .retrieve()
                 .bodyToMono(AddressResponseDTO.class)

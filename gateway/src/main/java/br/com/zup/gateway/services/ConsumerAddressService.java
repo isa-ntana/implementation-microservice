@@ -101,21 +101,13 @@ public class ConsumerAddressService {
         addressClient.deleteAddressById(addressId);
     }
 
-    public ConsumerAddressResponseDTO updateConsumer(String consumerId, ConsumerAddressRegisterDTO registerDTO) {
+    public ConsumerResponseDTO updateConsumer(String consumerId, ConsumerRegisterDTO registerDTO) {
         log.info("Start update Consumer with Id flow");
-        ConsumerRegisterDTO consumerRegisterDTO = mapToConsumerRegisterDTO(registerDTO);
-        ConsumerResponseDTO updatedConsumer = consumerClient.updateConsumer(consumerId, consumerRegisterDTO);
-        AddressResponseDTO addressResponseDTO = addressClient.getAddressById(consumerId);
-        log.info("Finish update Consumer with Id flow");
-        return new ConsumerAddressResponseDTO(updatedConsumer, addressResponseDTO);
+        return consumerClient.updateConsumer(consumerId, registerDTO);
     }
 
-    public ConsumerAddressResponseDTO updateAddress(String addressId, ConsumerAddressRegisterDTO registerDTO) {
+    public AddressResponseDTO updateAddress(String addressId, AddressRegisterDTO registerDTO) {
         log.info("Start update Address with Id flow");
-        AddressRegisterDTO addressRegisterDto = mapToAddressRegisterDTO(registerDTO, addressId);
-        AddressResponseDTO updatedAddress = addressClient.updateAddress(addressId, addressRegisterDto);
-        ConsumerResponseDTO consumerResponseDTO = consumerClient.getConsumerById(registerDTO.getAddress().getConsumerId());
-        log.info("Finish update Address with Id flow");
-        return new ConsumerAddressResponseDTO(consumerResponseDTO, updatedAddress);
+        return addressClient.updateAddress(addressId, registerDTO);
     }
 }
